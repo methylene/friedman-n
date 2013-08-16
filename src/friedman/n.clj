@@ -13,8 +13,11 @@
       true)))
 
 (defn slice [x start end]
-  "Returns a 'slice' between start index (inclusive) and end index (exclusive).
-   start should be lower than end, and end should be no greater than (count x)."
+  "Returns a 'slice' of the sequence x between start index (inclusive)
+   and end index (exclusive). The start index should not be greater
+   than the end index, and the end index should not be greater than
+   the length of x. The length of the returned sequence will be equal
+   to the difference between end and start."
   (take (- end start) (drop start x)))
 
 (defn check-slices-at [x [a b]]
