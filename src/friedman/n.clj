@@ -1,41 +1,52 @@
 (ns friedman.n)
 
-(defn subseq? [y z]
-  (and (<= (count y) (count z))
-       (every? identity (map = y z))))
-
-(defn slice [y start end]
-  (take (- end start) (drop start y)))
-
-(defn bad-interval? [interval y]
-  (if (or
-       (nil? (first interval))
-       (nil? (second interval)))
-    (str "ouch: " interval)
-    (let [i (first interval)
-          j (second interval)
-          iseq (slice y (dec i) (* 2 i))
-          jseq (slice y (dec j) (* 2 j))]
-      (if (subseq? iseq jseq)
-        [iseq jseq]))))
-
-(defn intervals [n]
-  (loop [acc (transient []) i 1 j 2]
-    (if (<= j (/ n 2))
-      (if (= 1 (- j i))
-        (recur (conj! acc [i j]) 1 (inc j))
-        (recur (conj! acc [i j]) (inc i) j))
+(defn subsequence? [x y]
+  "Tests if the sequence x is a subseqence of the sequence y. Returns a
+  list of indexes (of the same length as x) into y, or nil if x is not
+  a subsequence of y."
+  (loop [x' x y' y acc (transient [])]
+    (if (seq x')
+      (if (<= (count x) (count y))
+        (let [i (.indexOf y' (first x'))]
+          (if (not (neg? i))
+            (recur (rest x') (drop (inc i) y') (conj acc i)))))
       (persistent! acc))))
 
+(defn slice [x start end]
+  "Returns a 'slice' between start index (inclusive) and end index (exclusive).
+   start should be lower than end, and end should be no greater than (count x)."
+  (take (- end start) (drop start x)))
+
+(defn check-slices-at [x [a b]]
+  "Tests if a slice of x, beginning at a and of length a + 1,
+   is a subseq of another slice of x, beginning at b and of length b + 1.
+   The caller must ensure that (< a b), and b is so that (<= (* 2 (inc b)) (count x))."
+  (let [y (slice x a (* 2 (inc a)))
+        z (slice x b (* 2 (inc b)))]
+    (if (subsequence? y z)
+      {:seq x
+       :start-indexes [a b]})))
+
+(defn ordered-pairs-below
+  ([n]
+     (loop [acc (transient []) i 1 j 2]
+       (if (<= j (/ n 2))
+         (if (= 1 (- j i))
+           (recur (conj! acc [i j]) 1 (inc j))
+           (recur (conj! acc [i j]) (inc i) j))
+         (persistent! acc))))
+  ([i j]))
+
+
+
 (defn is-not-* [y]
-  "Determines whether seq y has property *.
-   If y fails to have property, the offending subsequences
-   are returned along with their 1-based start indexes i and j.
-   Their 1-based end indexes (inclusive) are 2i and 2j, respectively."
-  (loop [ivs (intervals (count y))]
-    (when (seq ivs)
-      (if-let [bad-seqs (bad-interval? (first ivs) y)]
+  "Determines whether seq y has property *. If y fails to have property
+   *, the start indexes of the offending subsequences are returned"
+  (loop [ordered-pairs (ordered-pairs-below (count y))]
+    (when (seq ordered-pairs)
+      (let [])
+      (if-let [slices-info (check-slices-at (first ivs) y)]
         {:offending-start-indexes (first ivs)
-         :offending-subseqs bad-seqs}
-        (recur (rest ivs))))))
+         :bad-things bad-things}
+        (recur (rest ordered-pairs))))))
 
