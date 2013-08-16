@@ -6,12 +6,12 @@
 
 (defn -main
   [& args]
-  (let [x '(1 2 2 2 1 1 1 1 1 1 1)] ; try variations
+  (let [x '(1 2 2 2 1 1 1 1 1 1 1 1)] ; try variations
     (if-let [fail-info (is-not-* x)]
-      (let [i0 (first (:slice-start-indexes fail-info))
-            i1 (* 2 (inc (first (:slice-start-indexes fail-info))))
-            j0 (second (:slice-start-indexes fail-info))
-            j1 (* 2 (inc (second (:slice-start-indexes fail-info))))
+      (let [i0 (first fail-info)
+            i1 (* 2 (inc (first fail-info)))
+            j0 (second fail-info)
+            j1 (* 2 (inc (second fail-info)))
             low-seq (slice x i0 i1)
             high-seq (slice x j0 j1)]
         (infof (str "Sequence x = %s doesn't have property *:%n"

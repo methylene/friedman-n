@@ -18,26 +18,23 @@
   (take (- end start) (drop start x)))
 
 (defn check-slices-at [x [a b]]
-  "Tests if a slice of x, beginning at a and of length a + 1, is a
-   subseq of another slice of x, beginning at b and of length b + 1.
-   The caller must ensure that the pair [a b] is strictly sorted, and
-   b is not too big, i.e. (<= (* 2 (inc b)) (count x)). Returns the
-   indexes of the lower slice in the upper slice, or nil if the lower
-   slice is not a subsequence of the higher slice."
+  "Returns [a b] if a slice of x, beginning at index a and of length a + 1,
+   is a subseq of another slice of x, beginning at index b and of length b + 1.
+   Otherwise, returns nil. Please be sure that a and b are not negative or
+   too large, i.e. (<= (* 2 (inc a)) (count x)) and (<= (* 2 (inc b)) (count x))"
   (let [y (slice x a (* 2 (inc a)))
         z (slice x b (* 2 (inc b)))]
-    (if (subsequence? y z)
-      {:slice-start-indexes [a b]})))
+    (if (subsequence? y z) [a b])))
 
 (defn << [p q]
-  "Definition of the << order on pairs. Returns true if each element of
+  "Defines an ordering on pairs. Returns true if each element of
   p is strictly lower than the corresponding element of q,
   respectively. Otherwise, returns false."
   (and (< (first p) (first q))
        (< (second p) (second q))))
 
 (defn next-pair [[i j]]
-  "Returns the 'next' stricly ordered pair: Increment i if that results
+  "Returns the 'next' stricly sorted pair: Increment i if that results
   in another strictly sorted pair. Otherwise, increment j and set i to
   0. This makes more sense if the input is a strictly sorted pair."
   (if (>= (inc i) j)
@@ -54,13 +51,13 @@
      (if (<< p limit)
        (cons p (lazy-seq (pairs-below limit (next-pair p)))))))
 
-(defn is-not-* [y]
-  "Determines whether sequence y has property *. If y fails to have property
-   *, the start indexes of the offending subsequences are returned"
-  (let [n (int (/ (count y) 2))]
+(defn is-not-* [x]
+  "Determines whether sequence x has property *. If x fails to have property *,
+   the start indexes of the offending subsequences are returned"
+  (let [n (int (/ (count x) 2))]
     (loop [pairs (pairs-below [n n])]
       (when (seq pairs)
-        (if-let [slices-info (check-slices-at y (first pairs))]
+        (if-let [slices-info (check-slices-at x (first pairs))]
           slices-info
           (recur (rest pairs)))))))
 
