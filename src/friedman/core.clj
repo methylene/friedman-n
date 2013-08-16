@@ -6,7 +6,7 @@
 
 (defn -main
   [& args]
-  (let [x '(1 2 2 2 1 1 1 1 1 1 1 1)] ; try variations
+  (let [x '(1 2 2 2 1 1 1 1 1 1 1)] ; try variations
     (if-let [fail-info (is-not-* x)]
       (let [i0 (first fail-info)
             i1 (* 2 (inc (first fail-info)))
