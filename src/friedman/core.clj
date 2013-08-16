@@ -6,7 +6,7 @@
 
 (defn -main
   [& args]
-  (let [x '(1 2 2 2 1 1 1 1 1 1 1)] ; try with one more 1 at the end
+  (let [x '(1 2 2 2 1 1 1 1 1 1 1)] ; try variations
     (if-let [fail-info (is-not-* x)]
       (let [i0 (first (:slice-start-indexes fail-info))
             i1 (* 2 (inc (first (:slice-start-indexes fail-info))))

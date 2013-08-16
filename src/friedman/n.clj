@@ -29,27 +29,33 @@
     (if (subsequence? y z)
       {:slice-start-indexes [a b]})))
 
-(defn pair-lt? [p q]
+(defn << [p q]
+  "Definition of the << order on pairs. Returns true if each element of
+  p is strictly lower than the corresponding element of q,
+  respectively. Otherwise, returns false."
   (and (< (first p) (first q))
        (< (second p) (second q))))
 
-(defn inc-pair [[i j]]
-  "Returns the 'next' pair, according to lexicographic ordering (j is
-  more significant). The caller must ensure that i < j, i.e. the pair
-  is strictly sorted."
-  (if (= 1 (- j i))
+(defn next-pair [[i j]]
+  "Returns the 'next' stricly ordered pair: Increment i if that results
+  in another strictly sorted pair. Otherwise, increment j and set i to
+  0. This makes more sense if the input is a strictly sorted pair."
+  (if (>= (inc i) j)
     [0 (inc j)]
     [(inc i) j]))
 
 (defn pairs-below
+  "Returns a lazy sequence of all strictly sorted pairs of non-negative
+  ints [i j] for which (<< [i j] limit) is true. For example,
+  (pairs-below [3 3]) returns the following list: '([0 1] [0 2] [1 2])"
   ([limit]
      (pairs-below limit [0 1]))
   ([limit p]
-     (if (pair-lt? p limit)
-       (cons p (lazy-seq (pairs-below limit (inc-pair p)))))))
+     (if (<< p limit)
+       (cons p (lazy-seq (pairs-below limit (next-pair p)))))))
 
 (defn is-not-* [y]
-  "Determines whether seq y has property *. If y fails to have property
+  "Determines whether sequence y has property *. If y fails to have property
    *, the start indexes of the offending subsequences are returned"
   (let [n (int (/ (count y) 2))]
     (loop [pairs (pairs-below [n n])]
