@@ -51,12 +51,12 @@
   ([limit]
      (pairs-below limit [0 1]))
   ([limit p]
-     (if (<< p limit)
+     (when (<< p limit)
        (cons p (lazy-seq (pairs-below limit (next-pair p)))))))
 
 (defn is-not-* [x]
   "Determines whether sequence x has property *. If x fails to have property *,
-   the start indexes of the offending subsequences are returned"
+   the start indexes of the offending slices are returned"
   (let [n (int (/ (count x) 2))]
     (loop [pairs (pairs-below [n n])]
       (when (seq pairs)
