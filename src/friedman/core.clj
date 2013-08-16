@@ -1,21 +1,23 @@
 (ns friedman.core
-  (:require [friedman.n :refer [is-not-*]]
+  (:require [friedman.n :refer [is-not-* slice]]
             [clojure.tools.logging :refer [infof]]
             [clojure.string :refer [join]])
   (:gen-class))
 
 (defn -main
   [& args]
-  (let [y '(1 2 2 2 1 1 1 1 1 1 1)] ; try with one more 1 at the end
-    (if-let [fail-info (is-not-* y)]
-      (infof (str "Sequence y = %s doesn't have the star property:%n"
-                  "y [%d], ... , y [%d] = '(%s)%n"
-                  "y [%d], ... , y [%d] = '(%s)")
-             y
-             (first (:offending-start-indexes fail-info))
-             (* 2 (first (:offending-start-indexes fail-info)))
-             (join " " (first (:offending-subseqs fail-info)))
-             (second (:offending-start-indexes fail-info))
-             (* 2 (second (:offending-start-indexes fail-info)))
-             (join " " (second (:offending-subseqs fail-info))))
-      (infof "Sequence y = %s has the star property." y))))
+  (let [x '(1 2 2 2 1 1 1 1 1 1 1)] ; try with one more 1 at the end
+    (if-let [fail-info (is-not-* x)]
+      (let [i0 (first (:slice-start-indexes fail-info))
+            i1 (* 2 (inc (first (:slice-start-indexes fail-info))))
+            j0 (second (:slice-start-indexes fail-info))
+            j1 (* 2 (inc (second (:slice-start-indexes fail-info))))
+            low-seq (slice x i0 i1)
+            high-seq (slice x j0 j1)]
+        (infof (str "Sequence x = %s doesn't have property *:%n"
+                    "y = x[%d], ..., x[%d] = '(%s)%n"
+                    "is a subsequence of%n"
+                    "z = x[%d], ..., x[%d] = '(%s)%n"
+                    "(0-based indexes)")
+               x i0 (dec i1) (join " " low-seq) j0 (dec j1) (join " " high-seq)))
+      (infof "Sequence x = %s has property *." x))))
