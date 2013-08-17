@@ -40,7 +40,7 @@
 
 (defn all-strings-of-length [symbols n]
   "Returns a lazy finite sequence of all sequences of length n, with
-  symbols from the finite seqence symbols. For example, if symbols =
+  symbols from the finite alphabet symbols. For example, if symbols =
   [0 1] and n = 10, returns all 1024 binary sequences of length 10."
   (all-strings symbols (take n (repeat (first symbols)))))
 
