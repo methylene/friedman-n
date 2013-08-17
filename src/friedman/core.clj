@@ -9,8 +9,7 @@
   [& args]
   (doseq [x (all-strings-of-length [0 1] 11)]
     (if (not (is-not-* x))
-      (printf "Sequence x = (%s) has property *.%n" (join " " x))))
-  )
+      (printf "Sequence x = (%s) has property *.%n" (join " " x)))))
 
 (defn print-sequence-info [x]
   (if-let [fail-info (is-not-* x)]
