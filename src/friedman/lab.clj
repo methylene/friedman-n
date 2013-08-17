@@ -16,13 +16,14 @@
     (concat (take n s) (cons new-val (drop (inc n) s)))))
 
 (defn next-string
-  "An implementation of increment with carry. Increment the first
-  letter in the string (sequence) s. If the first letter was already
-  the last letter of the alphabet symbols, set it to the first letter
-  and proceed in a recursive fashion with the next letter, until a
-  letter different from the last letter of the alphabet is found, or
-  the string is exhausted because all its letters were already the
-  last element in the alphabet. In the latter case, return nil."
+  "An implementation of (bounded) increment with carry. Increment the
+  first letter in the string (sequence) s. If the first letter was
+  already the last letter of the alphabet symbols, set it to the first
+  letter and proceed in a recursive fashion with the next letter,
+  until a letter different from the last letter of the alphabet is
+  found, or the string is exhausted because all its letters were
+  already the last element in the alphabet. In the latter case, return
+  nil."
   ([symbols s]
      (next-string symbols s 0))
   ([symbols s n]
