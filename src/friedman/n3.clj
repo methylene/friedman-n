@@ -1,7 +1,5 @@
 (ns friedman.n3)
 
-;; Specialized functions for the case of 3 symbols {0, 1, 2}
-
 (defn compress-seq
   "Compresses the sequence x to a list of pairs [symbol exponent]. For
   example, '(0 0 1 1 1 2) becomes '([0 2] [1 3] [2 1])"
@@ -16,7 +14,8 @@
 
 (defn sequence-type
   "Returns the type of the compressed sequence x: A 4-tuple [length
-  num-zeros num-ones num-twos]"
+  num-zeros num-ones num-twos]. This will throw an exception if x
+  contains any symbols other than 0, 1 and 2."
   ([x]
      (sequence-type x 0 0 0 0))
   ([x n n0 n1 n2]
@@ -28,7 +27,7 @@
           (= 0 caar) (recur rx (inc n) (+ n0 cadar) n1 n2)
           (= 1 caar) (recur rx (inc n) n0 (+ n1 cadar) n2)
           (= 2 caar) (recur rx (inc n) n0 n1 (+ n2 cadar))
-          :else (first x)))
+          :else (throw (Exception. (str "bad input: " (first x))))))
        [n n0 n1 n2])))
 
 
