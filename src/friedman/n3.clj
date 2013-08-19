@@ -1,5 +1,7 @@
 (ns friedman.n3)
 
+(defrecord typed-sequence [x type])
+
 (defn compress-seq
   "Compresses the sequence x to a list of pairs [symbol exponent]. For
   example, '(0 0 1 1 1 2) becomes '([0 2] [1 3] [2 1])"
@@ -29,6 +31,32 @@
           (= 2 caar) (recur rx (inc n) n0 n1 (+ n2 cadar))
           :else (throw (Exception. (str "bad input: " (first x))))))
        [n n0 n1 n2])))
+
+(defn compressed-subsequence? [x y]
+  "Subsequence relation on compressed sequences x and y. For
+  uncompressed sequences a and b, (compressed-subsequence?
+  (compress-seq a) (compress-seq b)) if and only if (subsequence? a b)"
+  (if (seq x)
+    (let [[smb-x exp-x] (first x)]
+      (when-let [y' (loop [y' y]
+                      (when (seq y')
+                        (if (= smb-x (first (first y')))
+                          y'
+                          (recur (rest y')))))]
+        (let [[smb-y exp-y] (first y')]
+          (cond
+           (> exp-y exp-x)
+           (recur (rest x)
+                  (cons [smb-y (- exp-y exp-x)]
+                        (rest y')))
+           (= exp-y exp-x)
+           (recur (rest x) (rest y'))
+           (< exp-y exp-x)
+           (recur (cons [smb-y (- exp-x exp-y)]
+                        (rest x))
+                  (rest y'))))))
+    true))
+
 
 
 
