@@ -57,6 +57,17 @@
                   (rest y'))))))
     true))
 
+(defn uncompress
+  ([x] (uncompress x '()))
+  ([x y]
+     (if (seq x)
+       (let [[smb exp] (first x)]
+         (if (> exp 1)
+           (recur (cons [smb (dec exp)] (rest x))
+                  (cons smb y))
+           (recur (rest x)
+                  (cons smb y))))
+       (reverse y))))
 
 
 
