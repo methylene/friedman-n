@@ -1,18 +1,25 @@
-(ns friedman.bug)
+(ns friedman.bug
+  (:require [friedman.primitive-writer :as pw :refer [write-primitive]])
+  (:import [friedman.primitive_writer PrimitiveWriter]))
 
-(defprotocol Input
-  (write [y x]))
+(extend-protocol pw/PrimitiveWriter
+  StringBuilder
+  (write-primitive [writer p] (.append writer (str p))))
 
-(deftype StringBuilderInput [^StringBuilder sb]
-  Input
-  (write [y x] (.append sb (str x))))
+(derive clojure.lang.IPersistentVector ::coll)
+(derive clojure.lang.ISeq ::coll)
+(derive clojure.lang.IPersistentMap ::m)
 
-(derive clojure.lang.IPersistentVector ::collection)
-(derive clojure.lang.ISeq ::collection)
-(derive clojure.lang.IPersistentMap ::map)
+(defmulti write (fn [^PrimitiveWriter writer x] (class x)))
 
-(defmulti write (fn [x y] (class y)))
+(defmethod write ::coll [writer coll]
+  (write-primitive writer \c)
+  (doseq [item coll]
+    (write-primitive writer item)))
 
-(defmethod write ::collection [x y] (str "foobar " (count y)))
-(defmethod write ::map [x y] (str  "izmap " (count y)))
+(defmethod write ::m [writer m]
+  (write-primitive writer \m)
+  (doseq [[k v] m]
+    (write-primitive writer k)
+    (write-primitive writer v)))
 

@@ -7,5 +7,6 @@
                  [org.clojure/tools.logging "0.2.6"]]
   :repl-options {:port 9099}
   :jvm-opts ["-Xmx768m"]
-  :aot :all
+  :aot [friedman.primitive-writer
+        friedman.bug]
   :main friedman.core)
